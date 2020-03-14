@@ -5,72 +5,16 @@ package com.knoldus
  */
 trait CurrencyConverter {
 
-  val convertFromIndex: Int
-  val convertToIndex: Int
-
   /**
-   * @return index of the currency to convert from, in currencies array
-   */
-  def getConvertFromIndex: Int = convertFromIndex
-
-  /**
-   * @return index of the currency to convert to, in currencies array
-   */
-  def getConvertToIndex: Int = convertToIndex
-
-  /**
-   * validate the convert from currency
-   * @param convertFromIndex is the index of convert from currency in currencies array
-   * @return true if currency is available
-   */
-  private def validateConvertFromIndex(convertFromIndex: Int) = convertFromIndex >= 0 &
-    convertFromIndex < CurrencyConverter.CURRENCY_RATES.length
-
-  /**
-   * validate the convert to currency
-   * @param convertToIndex is the index of convert to currency in currencies array
-   * @return true if currency is available
-   */
-  private def validateConvertToIndex(convertToIndex: Int) = convertToIndex >= 0 &
-    convertToIndex < CurrencyConverter.CURRENCY_RATES(getConvertFromIndex).length
-
-  /**
-   * validate the amount to be converted
-   * @param amount value to be converted
-   * @return true if amount is >= 0
-   */
-  private def validateAmount(amount: Double) = amount >= 0.0
-
-  /**
-   * this method converts amount of one currency to another
-   * @param convertFromIndex currency to convert from
-   * @param convertToIndex currency to convert to
-   * @param amount to be converted
-   * @return transformed amount
-   */
-  def convertedValue(convertFromIndex: Int, convertToIndex: Int, amount: Double): Double = {
-    if (validateConvertFromIndex(convertFromIndex) && validateConvertToIndex(convertToIndex) && validateAmount(amount)) {
-      amount * CurrencyConverter.CURRENCY_RATES(convertFromIndex)(convertToIndex)
-    }
-    else {
-      throw new IndexOutOfBoundsException("Please provide acceptable input.")
-    }
-  }
-
-  private def validateConvertFromCurrency(convertFromCurrency: String) =
-    getCurrencies.indexOf(convertFromCurrency.toLowerCase) >= 0
-
-  private def validateConvertToCurrency(convertToCurrency: String) =
-    getCurrencies.indexOf(convertToCurrency.toLowerCase) >= 0
-
-  /**
-   * this method takes in currencies as string to convert amount to desired currency
+   * This method takes in currencies as string to convert amount to desired currency
+   *
    * @param convertFromCurrency String to convert from
-   * @param convertToCurrency String to convert to
-   * @param amount to be converted
+   * @param convertToCurrency   String to convert to
+   * @param amount              to be converted
    * @return transformed amount
    */
   def convertedValue(convertFromCurrency: String, convertToCurrency: String, amount: Double): Double = {
+
     if (validateConvertFromCurrency(convertFromCurrency) && validateConvertToCurrency(convertToCurrency)) {
       convertedValue(getCurrencies.indexOf(convertFromCurrency.toLowerCase),
         getCurrencies.indexOf(convertToCurrency.toLowerCase), amount)
@@ -81,9 +25,58 @@ trait CurrencyConverter {
   }
 
   /**
+   * this method converts amount of one currency to another
+   *
+   * @param convertFromIndex currency to convert from
+   * @param convertToIndex   currency to convert to
+   * @param amount           to be converted
+   * @return transformed amount
+   */
+  def convertedValue(convertFromIndex: Int, convertToIndex: Int, amount: Double): Double = {
+    if (validateConvertFromIndex(convertFromIndex) && validateConvertToIndex(convertToIndex, convertFromIndex) && validateAmount(amount)) {
+      amount * CurrencyConverter.CURRENCY_RATES(convertFromIndex)(convertToIndex)
+    }
+    else {
+      throw new IndexOutOfBoundsException("Please provide acceptable input.")
+    }
+  }
+
+  /**
+   * validate the convert from currency
+   *
+   * @param convertFromIndex is the index of convert from currency in currencies array
+   * @return true if currency is available
+   */
+  private def validateConvertFromIndex(convertFromIndex: Int) = convertFromIndex >= 0 &
+    convertFromIndex < CurrencyConverter.CURRENCY_RATES.length
+
+  /**
+   * validate the convert to currency
+   *
+   * @param convertToIndex is the index of convert to currency in currencies array
+   * @return true if currency is available
+   */
+  private def validateConvertToIndex(convertToIndex: Int, convertFromIndex: Int) = convertToIndex >= 0 &
+    convertToIndex < CurrencyConverter.CURRENCY_RATES(convertFromIndex).length
+
+  /**
+   * validate the amount to be converted
+   *
+   * @param amount value to be converted
+   * @return true if amount is >= 0
+   */
+  private def validateAmount(amount: Double) = amount >= 0.0
+
+  private def validateConvertFromCurrency(convertFromCurrency: String) =
+    getCurrencies.indexOf(convertFromCurrency.toLowerCase) >= 0
+
+  /**
    * @return array of currencies.
    */
   def getCurrencies: Array[String] = CurrencyConverter.CURRENCIES
+
+  private def validateConvertToCurrency(convertToCurrency: String) =
+    getCurrencies.indexOf(convertToCurrency.toLowerCase) >= 0
 
 }
 
@@ -117,3 +110,4 @@ object CurrencyConverter {
     KUWAITI_DINAR_TO_OTHERS, POLAND_ZLOTY_TO_OTHERS)
 
 }
+
